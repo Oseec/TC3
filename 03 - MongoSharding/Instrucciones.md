@@ -148,11 +148,36 @@ rs.initiate({
     ]
 })
 ```
+
+``` js
+rs.initiate({
+    _id : "mongors3", 
+    members: [
+        { 
+            _id : 0, 
+            host : "mongors3n1" 
+        },
+        { 
+            _id : 1, 
+            host : "mongors3n2" 
+        },
+        { 
+            _id : 2, 
+            host : "mongors3n3" 
+        }
+    ]
+})
+```
+
+
+
+
 Configuración del sharding
 
 ``` js
 sh.addShard("mongors1/mongors1n1")
 sh.addShard("mongors2/mongors2n1")
+sh.addShard("mongors3/mongors3n1")
 ```
 
 
