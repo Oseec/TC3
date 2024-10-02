@@ -1,6 +1,8 @@
 version: '2'
 services:
   
+
+  # Configuración del primer conjunto de réplicas (mongors1)
   mongors1n1:
     container_name: mongors1n1
     image: mongo
@@ -20,7 +22,7 @@ services:
     image: mongo
     command: mongod --shardsvr --replSet mongors1 --dbpath /data/db --port 27017
     ports:
-      - 27027:27017
+      - 27027:27017 # Puerto distinto (27027) para evitar conflictos con otros contenedores que usan el puerto 27017
     expose:
       - "27017"
     environment:
@@ -45,7 +47,7 @@ services:
 
 
 
-
+# Configuración del segundo conjunto de réplicas (mongors2)
 
   mongors2n1:
     container_name: mongors2n1
@@ -92,6 +94,7 @@ services:
 
 
 
+# Configuración del tercer conjunto de réplicas (mongors3)
 
   mongors3n1:
     container_name: mongors3n1
@@ -137,6 +140,7 @@ services:
 
 
 
+# Configuración de los servidores de configuración (config servers)
 
   mongocfg1:
     container_name: mongocfg1
@@ -175,7 +179,7 @@ services:
       - config3:/data/db
 
 
-
+ # Configuración de los mongos (routers)
 
   mongos1:
     container_name: mongos1
@@ -204,6 +208,8 @@ services:
       - "27017"
     volumes:
       - /etc/localtime:/etc/localtime:ro
+
+# Definición de los volúmenes persistentes que se utilizarán para almacenar datos
 
 volumes:
   data1:

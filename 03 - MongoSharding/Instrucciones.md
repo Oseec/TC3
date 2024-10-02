@@ -180,25 +180,76 @@ sh.addShard("mongors2/mongors2n1")
 sh.addShard("mongors3/mongors3n1")
 ```
 
+creacion de la base de datos:
 
+``` js
+sh.enableSharding("travel_social");
 
-
-```js
-sh.shardCollection(
-  "db2.test2",
-  { shardkey_custom: "hashed" },
-  false,
-  {
-    numInitialChunks: 5,
-    collation: { locale: "simple" }
-  }
-)
+sh.shardCollection("travel_social.users", { _id: "hashed" });
+sh.shardCollection("travel_social.posts", { user_id: "hashed" });
+sh.shardCollection("travel_social.comments", { post_id: "hashed" });
+sh.shardCollection("travel_social.likes", { post_id: "hashed" });
+sh.shardCollection("travel_social.follows", { user_id: "hashed" });
 ```
 
 
-Agregar Documentos de ejemplo
+
+Insertar datos distribuidos uniformemente:
+
 ``` js
-for (let i = 200; i < 2000; i++) {
-    db.test2.insertOne({'shardkey_custom': i, 'ced': 239438476+i, 'nombre': 'nom'+i})
+for (let i = 1; i <= 5000; i++) {
+    db.users.insertOne({
+        username: 'usuario' + i,
+        email: 'usuario' + i + '@example.com',
+        password: 'pass' + i,  // Contraseña ficticia
+        bio: 'Esta es la biografía del usuario ' + i + ', apasionado de los viajes y aventuras por todo el mundo.'
+    });
 }
+
+
+
+for (let i = 1; i <= 10000; i++) {
+    db.posts.insertOne({
+        user_id: Math.floor(Math.random() * 5000) + 1,  // Relacionado con un usuario aleatorio
+        text: 'Este es el post número ' + i + ' sobre un increíble destino de viaje.',
+        photos: ['http://example.com/photo' + i + '.jpg'],
+        created_at: new Date()
+    });
+}
+
+
+for (let i = 1; i <= 50000; i++) {
+    db.comments.insertOne({
+        post_id: Math.floor(Math.random() * 10000) + 1,  // Relacionado con un post aleatorio
+        user_id: Math.floor(Math.random() * 5000) + 1,  // Relacionado con un usuario aleatorio
+        text: 'Este es un comentario número ' + i + ' sobre un post de viajes.',
+        created_at: new Date()
+    });
+}
+
+
+for (let i = 1; i <= 100000; i++) {
+    db.likes.insertOne({
+        post_id: Math.floor(Math.random() * 10000) + 1,  // Relacionado con un post aleatorio
+        user_id: Math.floor(Math.random() * 5000) + 1,  // Relacionado con un usuario aleatorio
+    });
+}
+
+
+for (let i = 1; i <= 5000; i++) {
+    db.follows.insertOne({
+        user_id: Math.floor(Math.random() * 5000) + 1,  // Usuario que sigue
+        topic: 'Destino ' + i  // Tema aleatorio
+    });
+}
+```
+
+Verificar la distribución de los datos:
+
+``` js
+db.users.getShardDistribution();
+db.posts.getShardDistribution();
+db.comments.getShardDistribution();
+db.likes.getShardDistribution();
+db.follows.getShardDistribution();
 ```
