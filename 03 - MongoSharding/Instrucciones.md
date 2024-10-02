@@ -253,3 +253,12 @@ db.comments.getShardDistribution();
 db.likes.getShardDistribution();
 db.follows.getShardDistribution();
 ```
+
+
+algunos queries de prueba para los datos:
+
+``` js
+db.posts.find({ user_id: 123 });
+db.likes.find({ user_id: 5678 }).pretty();
+db.likes.find({ post_id: 1234 }).pretty();
+```
